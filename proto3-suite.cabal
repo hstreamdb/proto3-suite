@@ -15,8 +15,13 @@ Flag dhall
   Default:       False
   Manual:        True
 
-Flag swagger
-  Description:   Turn on Swagger doc generation.
+Flag no-swagger
+  Description:   Turn off Swagger doc generation.
+  Default:       True
+  Manual:        False
+
+Flag enable-tests
+  Description:   Turn on tests.
   Default:       False
   Manual:        True
 
@@ -27,7 +32,7 @@ library
     build-depends:     dhall >=1.13 && < 1.34
     cpp-options:       -DDHALL
 
-  if flag(swagger)
+  if !flag(no-swagger)
     exposed-modules:   Proto3.Suite.DotProto.Generate.Swagger
     build-depends:     swagger2 >=2.1.6 && <2.7
     cpp-options:       -DSWAGGER
@@ -86,6 +91,8 @@ library
   ghc-options:         -O2 -Wall
 
 test-suite tests
+  if !flag(enable-tests)
+    buildable:         False
   type:                exitcode-stdio-1.0
   main-is:             Main.hs
 
@@ -94,7 +101,7 @@ test-suite tests
     build-depends:     dhall >=1.13 && < 1.34
     cpp-options:       -DDHALL
 
-  if flag(swagger)
+  if !flag(no-swagger)
     build-depends:     swagger2
     cpp-options:       -DSWAGGER
 
