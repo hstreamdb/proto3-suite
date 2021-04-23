@@ -17,8 +17,8 @@ Flag dhall
 
 Flag no-swagger
   Description:   Turn off Swagger doc generation.
-  Default:       True
-  Manual:        False
+  Default:       False
+  Manual:        True
 
 Flag enable-tests
   Description:   Turn on tests.
