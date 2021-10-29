@@ -135,6 +135,13 @@ test-suite tests
                        TestProtoNestedMessage
                        --TestProtoProtocPlugin
 
+  autogen-modules:
+                       TestProto
+                       TestProtoImport
+                       TestProtoNestedMessage
+                       TestProtoOneof
+                       TestProtoOneofImport
+
   hs-source-dirs:      tests gen
   default-language:    Haskell2010
   build-depends:       base >=4.8 && <5.0,
