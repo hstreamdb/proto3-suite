@@ -1762,7 +1762,7 @@ defaultImports usesGrpc =
     , importDecl_ (m "Data.Map")              & qualified haskellNS  & selecting  [i"Map", i"mapKeysMonotonic"]
     , importDecl_ (m "Data.Proxy")            & qualified proxyNS    & everything
     , importDecl_ (m "Data.String")           & qualified haskellNS  & selecting  [i"fromString"]
-    , importDecl_ (m "Data.Text.Lazy")        & qualified haskellNS  & selecting  [i"Text"]
+    , importDecl_ (m "Data.Text")             & qualified haskellNS  & selecting  [i"Text"]
     , importDecl_ (m "Data.Vector")           & qualified haskellNS  & selecting  [i"Vector"]
     , importDecl_ (m "Data.Word")             & qualified haskellNS  & selecting  [i"Word16", i"Word32", i"Word64"]
     , importDecl_ (m "GHC.Enum")              & qualified haskellNS  & everything

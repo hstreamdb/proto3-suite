@@ -3,18 +3,7 @@
 # For more information, please see the documentation at:
 #   https://docs.haskellstack.org/en/stable/lock_files
 
-packages:
-- completed:
-    size: 45006
-    url: https://github.com/awakesecurity/proto3-wire/archive/9b1c178f8a23a5f03237cb77cce403bc386da523.tar.gz
-    name: proto3-wire
-    version: 1.2.2
-    sha256: df812fdfe6c7df641d310c6273c16de4fda8f4d61635f084e24937ca0b91944c
-    pantry-tree:
-      size: 1325
-      sha256: bf3471cb92d5c273bf1163594380e836b48917a076b08827286a32f3d2320dee
-  original:
-    url: https://github.com/awakesecurity/proto3-wire/archive/9b1c178f8a23a5f03237cb77cce403bc386da523.tar.gz
+packages: []
 snapshots:
 - completed:
     size: 585393
