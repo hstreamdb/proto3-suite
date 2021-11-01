@@ -15,7 +15,6 @@ import qualified Data.ByteString.Lazy        as BL
 import           Data.Either                 (isRight)
 import qualified Data.List.NonEmpty          as NE
 import           Data.String
-import           Data.Semigroup              ((<>))
 import           GHC.Exts                    (fromList, Proxy#)
 import           Proto3.Suite
 import           Proto3.Wire.Decode          (ParseError)
@@ -92,6 +91,7 @@ qcPropDecEncId = testGroup "Property: (decode . encode = id) for various message
   , testProperty "WithEnum"            (prop :: MsgProp TP.WithEnum)
   , testProperty "WithNesting"         (prop :: MsgProp TP.WithNesting)
   , testProperty "WithRepetition"      (prop :: MsgProp TP.WithRepetition)
+  , testProperty "WithRepeatedSigned"  (prop :: MsgProp TP.WithRepeatedSigned)
   , testProperty "WithFixed"           (prop :: MsgProp TP.WithFixed)
   , testProperty "WithBytes"           (prop :: MsgProp TP.WithBytes)
   , testProperty "AllPackedTypes"      (prop :: MsgProp TP.AllPackedTypes)
@@ -132,6 +132,7 @@ encoderMatchesGoldens = testGroup "Encoder matches golden encodings"
   , check "with_enum0.bin"            $ TP.WithEnum $ Enumerated $ Right $ TP.WithEnum_TestEnumENUM1
   , check "with_enum1.bin"            $ TP.WithEnum $ Enumerated $ Right $ TP.WithEnum_TestEnumENUM2
   , check "with_repetition.bin"       $ TP.WithRepetition [1..5]
+  , check "with_repeated_signed.bin"  $ TP.WithRepeatedSigned [0,1,-1,2,-2] [0,1,-1,2,-2]
   , check "with_bytes.bin"            $ TP.WithBytes (BC.pack "abc") (fromList $ map BC.pack ["abc","123"])
   , check "with_nesting_repeated.bin" $ TP.WithNestingRepeated
                                           [ TP.WithNestingRepeated_Nested "123abc" 123456 [1,2,3,4] [5,6,7,8]
@@ -186,6 +187,7 @@ parseFromGoldens = testGroup "Parse golden encodings"
   , check "with_enum0.bin"            $ TP.WithEnum $ Enumerated $ Right $ TP.WithEnum_TestEnumENUM1
   , check "with_enum1.bin"            $ TP.WithEnum $ Enumerated $ Right $ TP.WithEnum_TestEnumENUM2
   , check "with_repetition.bin"       $ TP.WithRepetition [1..5]
+  , check "with_repeated_signed.bin"  $ TP.WithRepeatedSigned [0,1,-1,2,-2] [0,1,-1,2,-2]
   , check "with_fixed.bin"            $ TP.WithFixed 16 (-123) 4096 (-4096)
   , check "with_bytes.bin"            $ TP.WithBytes (BC.pack "abc") (fromList $ map BC.pack ["abc","123"])
   , check "with_packing.bin"          $ TP.WithPacking [1,2,3] [1,2,3]
@@ -252,12 +254,12 @@ dotProtoUnitTests = testGroup ".proto parsing tests"
   ]
 
 trivialDotProto :: DotProto
-trivialDotProto = DotProto [] [] DotProtoNoPackage [] (DotProtoMeta (Path $ "test-files" NE.:| ["trivial"]))
+trivialDotProto = DotProto [] [] DotProtoNoPackage [] (DotProtoMeta (Path $ "test-files" NE.:| ["test_trivial"]))
 
 dotProtoParseTrivial :: TestTree
 dotProtoParseTrivial = testCase
   "Parse a content-less file" $
-  testDotProtoParse "test-files/trivial.proto" trivialDotProto
+  testDotProtoParse (testFilesPfx <> "trivial.proto") trivialDotProto
 
 dotProtoPrintTrivial :: TestTree
 dotProtoPrintTrivial = testCase

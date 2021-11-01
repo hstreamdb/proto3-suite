@@ -13,12 +13,12 @@ import           Control.Monad.Except
 import qualified Data.Aeson
 import qualified Data.ByteString.Lazy           as LBS
 import qualified Data.ByteString.Lazy.Char8     as LBS8
-import           Data.Monoid                    ((<>))
 import           Data.Proxy                     (Proxy(..))
 import           Data.String                    (IsString)
 import           Data.Swagger                   (ToSchema)
 import qualified Data.Swagger
 import qualified Data.Text                      as T
+import           Google.Protobuf.Timestamp      (Timestamp(..))
 import           Prelude                        hiding (FilePath)
 import           Proto3.Suite.DotProto.Generate
 import           Proto3.Suite.DotProto          (fieldLikeName, prefixedEnumFieldName, typeLikeName)
@@ -34,9 +34,10 @@ import qualified Turtle.Format                  as F
 
 codeGenTests :: TestTree
 codeGenTests = testGroup "Code generator unit tests"
-  [ camelCaseMessageNames
+  [ pascalCaseMessageNames
   , camelCaseMessageFieldNames
   , don'tAlterEnumFieldNames
+  , knownTypeMessages
   {-
    - These tests have been temporarily removed to pass CI.
   , simpleEncodeDotProto
@@ -44,8 +45,18 @@ codeGenTests = testGroup "Code generator unit tests"
   -}
   ]
 
-camelCaseMessageNames :: TestTree
-camelCaseMessageNames = testGroup "CamelCasing of message names"
+knownTypeMessages :: TestTree
+knownTypeMessages =
+  testGroup
+    "KnownType custom codec"
+    [ testCase "Timestamp rfc3339 json encoding"
+        $ encode defaultOptions (Timestamp 0 0) @?= "\"1970-01-01T00:00:00Z\""
+    , testCase "Timestamp rfc3339 json decoding"
+        $ eitherDecode "\"1970-01-01T00:00:00Z\"" @?= Right (Timestamp 0 0)
+    ]
+
+pascalCaseMessageNames :: TestTree
+pascalCaseMessageNames = testGroup "PascalCasing of message names"
   [ testCase "Capitalizes letters after underscores"
       $ typeLikeName "protocol_analysis" @?= Right "ProtocolAnalysis"
 
@@ -91,8 +102,8 @@ don'tAlterEnumFieldNames
         prefixedEnumFieldName enumName fieldName @?= (enumName <> fieldName)
 
 setPythonPath :: IO ()
-setPythonPath = Turtle.export "PYTHONPATH" =<<
-  maybe pyTmpDir (\p -> pyTmpDir <> ":" <> p) <$> Turtle.need "PYTHONPATH"
+setPythonPath = Turtle.export "PYTHONPATH" .
+  maybe pyTmpDir (\p -> pyTmpDir <> ":" <> p) =<< Turtle.need "PYTHONPATH"
 
 simpleEncodeDotProto :: TestTree
 simpleEncodeDotProto =
@@ -132,10 +143,9 @@ simpleDecodeDotProto =
 
 -- E.g. dumpAST ["test-files"] "test_proto.proto"
 dumpAST :: [FilePath] -> FilePath -> IO ()
-dumpAST incs fp = (either (error . show) putStrLn <=< runExceptT) $ do
+dumpAST incs fp = either (error . show) putStrLn <=< runExceptT $ do
   (dp, tc) <- readDotProtoWithContext incs fp
-  src <- renderHsModuleForDotProto mempty dp tc
-  pure src
+  renderHsModuleForDotProto mempty dp tc
 
 hsTmpDir, pyTmpDir :: IsString a => a
 hsTmpDir = "test-files/hs-tmp"
@@ -150,6 +160,9 @@ compileTestDotProtos = do
         , "test_proto_import.proto"
         , "test_proto_oneof.proto"
         , "test_proto_oneof_import.proto"
+        , "test_proto_leading_dot.proto"
+        , "test_proto_protoc_plugin.proto"
+        , "test_proto_nested_message.proto"
         ]
 
   forM_ protoFiles $ \protoFile -> do

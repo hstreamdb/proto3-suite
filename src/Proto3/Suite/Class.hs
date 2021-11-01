@@ -102,7 +102,6 @@ import           Data.Functor           (($>))
 import           Data.Int               (Int32, Int64)
 import qualified Data.Map               as M
 import           Data.Maybe             (fromMaybe, isNothing)
-import           Data.Monoid            ((<>))
 import           Data.Proxy             (Proxy (..))
 import           Data.String            (IsString (..))
 import qualified Data.Text              as T
@@ -117,7 +116,6 @@ import           GHC.TypeLits
 import           Proto3.Suite.DotProto  as DotProto
 import           Proto3.Suite.Types     as Wire
 import           Proto3.Wire
-import           Proto3.Wire.Class      (ProtoEnum(..))
 import           Proto3.Wire.Decode     (ParseError, Parser (..), RawField,
                                          RawMessage, RawPrimitive, runParser)
 import qualified Proto3.Wire.Decode     as Decode
@@ -576,6 +574,37 @@ instance MessageField (PackedVec Int64) where
   decodeMessageField = decodePacked Decode.packedVarints
   protoType _ = messageField (Repeated Int64) (Just DotProto.PackedField)
 
+instance MessageField (PackedVec (Signed Int32)) where
+  encodeMessageField fn = omittingDefault (Encode.packedVarintsV zigZag fn) . coerce @_ @(Vector Int32)
+    where
+      zigZag = fromIntegral . Encode.zigZagEncode
+
+  decodeMessageField = decodePacked (fmap (fmap zagZig) Decode.packedVarints)
+    where
+      -- This type signature is important: `Decode.zigZagDecode` will not undo
+      -- `Encode.zigZagEncode` if given a signed value with the high order bit
+      -- set. So we don't allow GHC to infer a signed input type.
+      zagZig :: Word32 -> Signed Int32
+      zagZig = Signed . fromIntegral . Decode.zigZagDecode
+
+  protoType _ = messageField (Repeated SInt32) (Just DotProto.PackedField)
+
+instance MessageField (PackedVec (Signed Int64)) where
+  encodeMessageField fn = omittingDefault (Encode.packedVarintsV zigZag fn) . coerce @_ @(Vector Int64)
+    where
+      zigZag = fromIntegral . Encode.zigZagEncode
+
+  decodeMessageField = decodePacked (fmap (fmap zagZig) Decode.packedVarints)
+    where
+      -- This type signature is important: `Decode.zigZagDecode` will not undo
+      -- `Encode.zigZagEncode` if given a signed value with the high order bit
+      -- set. So we don't allow GHC to infer a signed input type.
+      zagZig :: Word64 -> Signed Int64
+      zagZig = Signed . fromIntegral . Decode.zigZagDecode
+
+  protoType _ = messageField (Repeated SInt64) (Just DotProto.PackedField)
+
+
 instance MessageField (PackedVec (Fixed Word32)) where
   encodeMessageField fn = omittingDefault (Encode.packedFixed32V id fn) . coerce @_ @(Vector Word32)
   decodeMessageField = coerce @(Parser RawField (PackedVec Word32))
@@ -668,6 +697,86 @@ message :: (Message a, Named a) => Proxy# a -> DotProtoDefinition
 message proxy = DotProtoMessage ""
                                 (Single $ nameOf proxy)
                                 (DotProtoMessageField <$> dotProto proxy)
+
+-- * Wrapped Type Instances
+
+encodeWrapperMessage
+  :: MessageField a
+  => FieldNumber
+  -> a
+  -> Encode.MessageBuilder
+encodeWrapperMessage _ x = encodeMessageField (FieldNumber 1) x
+
+decodeWrapperMessage
+  :: MessageField a
+  => FieldNumber
+  -> Decode.Parser Decode.RawMessage a
+decodeWrapperMessage _ = at decodeMessageField (FieldNumber 1)
+
+dotProtoWrapper :: Primitive a => Proxy# a -> [DotProtoField]
+dotProtoWrapper proxy =
+  [ DotProtoField
+      (FieldNumber 1)
+      (Prim (primType proxy))
+      (Single "value")
+      []
+      ""
+  ]
+
+instance Message Double where
+  encodeMessage = encodeWrapperMessage
+  decodeMessage = decodeWrapperMessage
+  dotProto = dotProtoWrapper
+
+instance Message Float where
+  encodeMessage = encodeWrapperMessage
+  decodeMessage = decodeWrapperMessage
+  dotProto = dotProtoWrapper
+
+instance Message Int64 where
+  encodeMessage = encodeWrapperMessage
+  decodeMessage = decodeWrapperMessage
+  dotProto = dotProtoWrapper
+
+instance Message Word64 where
+  encodeMessage = encodeWrapperMessage
+  decodeMessage = decodeWrapperMessage
+  dotProto = dotProtoWrapper
+
+instance Message Int32 where
+  encodeMessage = encodeWrapperMessage
+  decodeMessage = decodeWrapperMessage
+  dotProto = dotProtoWrapper
+
+instance Message Word32 where
+  encodeMessage = encodeWrapperMessage
+  decodeMessage = decodeWrapperMessage
+  dotProto = dotProtoWrapper
+
+instance Message Bool where
+  encodeMessage = encodeWrapperMessage
+  decodeMessage = decodeWrapperMessage
+  dotProto = dotProtoWrapper
+
+instance Message T.Text where
+  encodeMessage = encodeWrapperMessage
+  decodeMessage = decodeWrapperMessage
+  dotProto = dotProtoWrapper
+
+instance Message TL.Text where
+  encodeMessage = encodeWrapperMessage
+  decodeMessage = decodeWrapperMessage
+  dotProto = dotProtoWrapper
+
+instance Message B.ByteString where
+  encodeMessage = encodeWrapperMessage
+  decodeMessage = decodeWrapperMessage
+  dotProto = dotProtoWrapper
+
+instance Message BL.ByteString where
+  encodeMessage = encodeWrapperMessage
+  decodeMessage = decodeWrapperMessage
+  dotProto = dotProtoWrapper
 
 -- * Generic Instances
 

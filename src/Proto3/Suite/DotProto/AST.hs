@@ -268,7 +268,6 @@ instance Arbitrary Packing where
 --   are meaningful in every type context.
 data DotProtoType
   = Prim           DotProtoPrimType
-  | Optional       DotProtoPrimType
   | Repeated       DotProtoPrimType
   | NestedRepeated DotProtoPrimType
   | Map            DotProtoPrimType DotProtoPrimType
@@ -342,6 +341,7 @@ data DotProtoMessagePart
   | DotProtoMessageOneOf DotProtoIdentifier [DotProtoField]
   | DotProtoMessageDefinition DotProtoDefinition
   | DotProtoMessageReserved   [DotProtoReservedField]
+  | DotProtoMessageOption DotProtoOption
   deriving (Show, Eq)
 
 instance Arbitrary DotProtoMessagePart where
