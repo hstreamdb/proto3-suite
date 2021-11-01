@@ -3,7 +3,7 @@
 
 module ArbitraryGeneratedTestTypes where
 
-import qualified Data.Text.Lazy        as T
+import qualified Data.Text             as T
 import qualified Data.Vector           as V
 import qualified Proto3.Suite.Types as DotProto
 import           Test.QuickCheck       (listOf)

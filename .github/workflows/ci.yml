@@ -19,9 +19,9 @@ jobs:
         name: Checkout
       - uses: cachix/install-nix-action@v13
         name: Install Nix
-      - uses: cachix/cachix-action@v10
-        name: Set up Cachix
-        with:
-          name: awakesecurity
-          authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+      # - uses: cachix/cachix-action@v10
+      #   name: Set up Cachix
+      #   with:
+      #     name: awakesecurity
+      #     authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
       - run: nix-build --attr proto3-suite --argstr compiler "${{ matrix.compiler }}" --arg enableDhall true
