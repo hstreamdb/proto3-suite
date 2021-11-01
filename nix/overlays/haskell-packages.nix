@@ -37,7 +37,7 @@ in {
                 owner = "hstreamdb";
                 repo = "proto3-wire";
                 rev = "fee1283d5621290e2cff155abf36598abdd0cd44";
-                sha256 = "14r2qm6x4bcaywbi3cypriz4hr8i2v3j4qm61lal6x21p0z9i9ak";
+                sha256 = "09rby6p42d5jbfvmarylfjcpjx80zd8c3ira8fcf2xifrl8ssb3w";
               };
             in haskellPackagesNew.callCabal2nix "proto3-wire" source { };
 
