@@ -6,6 +6,22 @@ on:
   pull_request:
 
 jobs:
+  nix-build:
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - macOS-latest
+        compiler:
+          - ghc8104
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2.3.4
+        name: Checkout
+      - uses: cachix/install-nix-action@v13
+        name: Install Nix
+      - run: nix-build --attr proto3-suite --argstr compiler "${{ matrix.compiler }}" --arg enableDhall true
+
   cabal-build:
     runs-on: ${{ matrix.os }}
     strategy:
@@ -22,7 +38,7 @@ jobs:
           ghc-version: ${{ matrix.ghc }}
           cabal-version: ${{ matrix.cabal }}
       - run: |
-          cabal build
+          cabal build all
           mkdir gen
           for proto in $(find test-files -name 'test_*.proto'); do
             cabal run compile-proto-file -- --out gen --includeDir test-files --proto "${proto#test-files/}"
