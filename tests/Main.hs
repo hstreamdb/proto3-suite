@@ -20,7 +20,7 @@ import           Proto3.Suite
 import           Proto3.Wire.Decode          (ParseError)
 import qualified Proto3.Wire.Decode          as Decode
 import           Proto3.Wire.Types           as P
-import qualified Test.DocTest
+
 import           Test.QuickCheck             (Arbitrary, Property, arbitrary,
                                               counterexample, oneof)
 import           Test.Tasty
@@ -29,6 +29,9 @@ import           Test.Tasty.HUnit            (Assertion, assertBool, testCase,
 import           Test.Tasty.QuickCheck       (testProperty, (===))
 import           TestCodeGen
 import qualified TestProto                   as TP
+
+import qualified Test.DocTest
+import           Build_doctests
 
 #ifdef DHALL
 import           TestDhall
@@ -58,7 +61,7 @@ tests = testGroup "Tests"
 docTests :: TestTree
 docTests = testCase "doctests" $ do
   putStrLn "Running all doctests..."
-  Test.DocTest.doctest
+  Test.DocTest.doctest $
     [ "-isrc"
     , "-itests"
     , "-igen"
@@ -71,7 +74,13 @@ docTests = testCase "doctests" $ do
     , "src/Proto3/Suite/DotProto/Internal.hs"
     , "src/Proto3/Suite/JSONPB/Class.hs"
     , "tests/TestCodeGen.hs"
-    ]
+
+    , "tests/ArbitraryGeneratedTestTypes.hs"
+    , "gen/TestProto.hs"
+    , "gen/TestProtoImport.hs"
+    , "gen/TestProtoOneof.hs"
+    , "gen/TestProtoOneofImport.hs"
+    ] <> flags <> pkgs
 
 --------------------------------------------------------------------------------
 -- QuickCheck properties
