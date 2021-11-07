@@ -6,18 +6,6 @@ on:
   pull_request:
 
 jobs:
-  nix-build:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macOS-latest]
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v2
-        name: Checkout
-      - uses: cachix/install-nix-action@v13
-        name: Install Nix
-      - run: nix-build --attr proto3-suite --argstr compiler "${{ matrix.compiler }}" --arg enableDhall true
-
   cabal-build:
     runs-on: ${{ matrix.os }}
     strategy:
