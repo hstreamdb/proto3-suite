@@ -5,7 +5,10 @@ allow-newer: true
 
 packages:
   - .
-  - "../proto3-wire"
+
+extra-deps:
+  - github: hstreamdb/proto3-wire
+    commit: fee1283d5621290e2cff155abf36598abdd0cd44
 
 nix:
   packages:
