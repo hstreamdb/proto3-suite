@@ -19,6 +19,7 @@ module Proto3.Suite
   (
   -- * Message Encoding/Decoding
     toLazyByteString
+  , toByteString
   , fromByteString
   , fromB64
   , Message(..)
