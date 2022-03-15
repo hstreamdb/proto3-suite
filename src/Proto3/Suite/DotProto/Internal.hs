@@ -454,7 +454,7 @@ typeLikeName s@(x : xs)
 
     -- Only valid as a secondary character.
     -- First character of a Haskell name can only be "isAlpha".
-    isValidNameChar x = isAlphaNum x || x == '_'
+    isValidNameChar c = isAlphaNum c || c == '_'
 
 -- | @'fieldLikeName' field@ is the casing transformation used to produce record selectors from message fields. If
 -- @field@ is prefixed by a span of uppercase characters then that prefix will be lowercased while the remaining string

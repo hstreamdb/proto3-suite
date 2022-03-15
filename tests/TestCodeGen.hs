@@ -265,13 +265,13 @@ compileTestDotProtos = do
 -- Swagger
 --
 -- >>> schemaOf @Something
--- {"properties":{"value":{"minimum":-9223372036854775808,"type":"integer","format":"int64","maximum":9223372036854775807},"another":{"minimum":-2147483648,"type":"integer","format":"int32","maximum":2147483647},"pickOne":{"$ref":"#/definitions/SomethingPickOne"}},"type":"object"}
+-- {"properties":{"value":{"format":"int64","maximum":9223372036854775807,"minimum":-9223372036854775808,"type":"integer"},"another":{"format":"int32","maximum":2147483647,"minimum":-2147483648,"type":"integer"},"pickOne":{"$ref":"#/definitions/SomethingPickOne"}},"type":"object"}
 -- >>> schemaOf @SomethingPickOne
--- {"properties":{"name":{"type":"string"},"someid":{"minimum":-2147483648,"type":"integer","format":"int32","maximum":2147483647},"dummyMsg1":{"$ref":"#/definitions/DummyMsg"},"dummyMsg2":{"$ref":"#/definitions/DummyMsg"},"dummyEnum":{"$ref":"#/definitions/DummyEnum"}},"maxProperties":1,"minProperties":1,"type":"object"}
+-- {"properties":{"name":{"type":"string"},"someid":{"format":"int32","maximum":2147483647,"minimum":-2147483648,"type":"integer"},"dummyMsg1":{"$ref":"#/definitions/DummyMsg"},"dummyMsg2":{"$ref":"#/definitions/DummyMsg"},"dummyEnum":{"$ref":"#/definitions/DummyEnum"}},"maxProperties":1,"minProperties":1,"type":"object"}
 -- >>> schemaOf @DummyMsg
--- {"properties":{"dummy":{"minimum":-2147483648,"type":"integer","format":"int32","maximum":2147483647}},"type":"object"}
+-- {"properties":{"dummy":{"format":"int32","maximum":2147483647,"minimum":-2147483648,"type":"integer"}},"type":"object"}
 -- >>> schemaOf @(Enumerated DummyEnum)
--- {"type":"string","enum":["DUMMY0","DUMMY1"]}
+-- {"enum":["DUMMY0","DUMMY1"],"type":"string"}
 --
 -- Generic HasDefault
 --

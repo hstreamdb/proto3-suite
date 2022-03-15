@@ -10,7 +10,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        ghc: ["8.10.4"]
+        ghc: ["8.10.4", "8.10.7"]
         cabal: ["3.6.2.0"]
         os: [ubuntu-latest, macOS-latest]
     name: build and test
@@ -21,10 +21,4 @@ jobs:
         with:
           ghc-version: ${{ matrix.ghc }}
           cabal-version: ${{ matrix.cabal }}
-      - run: |
-          cabal build all
-          mkdir gen
-          for proto in $(find test-files -name 'test_*.proto'); do
-            cabal run compile-proto-file -- --out gen --includeDir test-files --proto "${proto#test-files/}"
-          done
-          cabal build --enable-tests && cabal test
+      - run: ./run-tests.sh
