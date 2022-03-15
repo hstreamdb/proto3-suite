@@ -1535,6 +1535,7 @@ dotProtoServiceD pkgIdent ctxt serviceIdent service = do
                                , patVar "initialMetadata"
                                , patVar "sslConfig"
                                , patVar "logger"
+                               , patVar "serverOnStarted"
                                , patVar "serverMaxReceiveMessageLength"
                                , patVar "serverMaxMetadataSize"
                                ]
@@ -1580,6 +1581,7 @@ dotProtoServiceD pkgIdent ctxt serviceIdent service = do
                  , update "optInitialMetadata" "initialMetadata"
                  , update "optSSLConfig" "sslConfig"
                  , update "optLogger" "logger"
+                 , update "optServerOnStarted" "serverOnStarted"
                  , update "optMaxReceiveMessageLength" "serverMaxReceiveMessageLength"
                  , update "optMaxMetadataSize" "serverMaxMetadataSize"
                  ]
