@@ -37,6 +37,10 @@ import           Build_doctests
 import           TestDhall
 #endif
 
+import qualified Test.Proto.Generate.Name
+
+-- -----------------------------------------------------------------------------
+
 main :: IO ()
 main = defaultMain tests
 
@@ -49,13 +53,14 @@ tests = testGroup "Tests"
   , parserUnitTests
   , dotProtoUnitTests
   , codeGenTests
+  , Test.Proto.Generate.Name.tests
 
 #ifdef DHALL
   , dhallTests
 #endif
   ]
 
---------------------------------------------------------------------------------
+-- -----------------------------------------------------------------------------
 -- Doctests
 
 docTests :: TestTree
