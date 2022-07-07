@@ -74,6 +74,7 @@ module Proto3.Suite.Class
   , Message(..)
 
   -- * Encoding
+  , toByteString
   , toLazyByteString
 
   -- * Decoding
@@ -315,6 +316,10 @@ class Primitive a where
 
   default primType :: Named a => Proxy# a -> DotProtoPrimType
   primType pr = Named (Single (nameOf pr))
+
+-- | Serialize a message as a lazy 'B.ByteString'.
+toByteString :: Message a => a -> B.ByteString
+toByteString = Encode.toByteString . encodeMessage (fieldNumber 1)
 
 -- | Serialize a message as a lazy 'BL.ByteString'.
 toLazyByteString :: Message a => a -> BL.ByteString
