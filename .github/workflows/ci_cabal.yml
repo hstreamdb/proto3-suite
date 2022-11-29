@@ -1,0 +1,31 @@
+name: ci_cabal
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  cabal-build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macOS-latest]
+        ghc: ["8.10.4"]
+        cabal: ["3.6.2.0"]
+    name: build and test
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Haskell
+        uses: haskell/actions/setup@v1
+        with:
+          ghc-version: ${{ matrix.ghc }}
+          cabal-version: ${{ matrix.cabal }}
+      - run: |
+          cabal build all
+          mkdir gen
+          for proto in $(find test-files -name 'test_*.proto'); do
+            cabal run compile-proto-file_hstream -- --out gen --includeDir test-files --proto "${proto#test-files/}"
+          done
+      # FIXME:
+      - run: cabal test

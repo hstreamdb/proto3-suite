@@ -14,7 +14,7 @@
 --
 -- The 'Message' class captures types which correspond to protocol buffers messages.
 -- Instances of 'Message' can be written by hand for your types by using the
--- functions in the 'Proto3.Suite.Encode' and 'Proto3.Suite.Decode'
+-- functions in the 'Proto3.Wire.Encode' and 'Proto3.Wire.Decode'
 -- modules. In the case where the message format is determined by your Haskell code,
 -- you might prefer to derive your 'Message' instances using generic deriving.
 --
@@ -34,7 +34,7 @@
 --
 -- = Strings
 --
--- Use 'TL.Text' instead of 'String' for string types inside messages.
+-- Use 'T.Text' instead of 'String' for string types inside messages.
 --
 -- = Example
 --
@@ -43,7 +43,7 @@
 -- >                  , multiFieldFloat  :: Float
 -- >                  , multiFieldInt32  :: Int32
 -- >                  , multiFieldInt64  :: Int64
--- >                  , multiFieldString :: TL.Text
+-- >                  , multiFieldString :: T.Text
 -- >                  , multiFieldBool   :: Bool
 -- >                  } deriving (Show, Generic, Eq)
 -- >
@@ -491,15 +491,15 @@ instance Primitive Double where
   primType _ = Double
 
 instance Primitive T.Text where
-  encodePrimitive fn = Encode.text fn . TL.fromStrict
-  decodePrimitive = fmap TL.toStrict Decode.text
+  encodePrimitive = Encode.text
+  decodePrimitive = Decode.text
   primType _ = String
 
 deriving via T.Text instance Primitive (Proto3.Suite.Types.String T.Text)
 
 instance Primitive TL.Text where
-  encodePrimitive = Encode.text
-  decodePrimitive = Decode.text
+  encodePrimitive fn = Encode.text fn . TL.toStrict
+  decodePrimitive = fmap TL.fromStrict  Decode.text
   primType _ = String
 
 deriving via TL.Text instance Primitive (Proto3.Suite.Types.String TL.Text)

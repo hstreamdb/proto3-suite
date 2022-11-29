@@ -39,9 +39,9 @@ parseArgs = info (helper <*> parser) (fullDesc <> progDesc "Compiles a .proto fi
 
     stringType = option (eitherReader parseStringType)
       $ long "string-type"
-      <> metavar "Data.Text.Lazy.Text"
+      <> metavar "Data.Text.Text"
       <> help "Haskell representation of strings"
-      <> value (StringType "Data.Text.Lazy" "Text")
+      <> value (StringType "Data.Text" "Text")
 
     recordStyle = flag RegularRecords LargeRecords
       $ long "largeRecords"

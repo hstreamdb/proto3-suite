@@ -787,10 +787,14 @@ dotProtoMessageD stringType recordStyle ctxt parentIdent messageIdent messagePar
             [ recDecl_ (HsIdent messageName) flds ]
             defaultMessageDeriving
 
+#ifdef SWAGGER
+    -- getName :: DotProtoMessagePart -> m [(Maybe ([DotProtoOption], DotProtoType), String)]
     let getName = \case
           DotProtoMessageField fld -> (: []) <$> getFieldNameForSchemaInstanceDeclaration fld
           DotProtoMessageOneOf ident _ -> (: []) . (Nothing, ) <$> dpIdentUnqualName ident
           _ -> pure []
+
+#endif
 
     messageDataDecl <- mkDataDecl <$> foldMapM (messagePartFieldD messageName) messageParts
 
@@ -1731,6 +1735,7 @@ dotProtoServiceD stringType pkgSpec ctxt serviceIdent service = do
                                , patVar "initialMetadata"
                                , patVar "sslConfig"
                                , patVar "logger"
+                               , patVar "serverOnStarted"
                                , patVar "serverMaxReceiveMessageLength"
                                , patVar "serverMaxMetadataSize"
                                ]
@@ -1776,6 +1781,7 @@ dotProtoServiceD stringType pkgSpec ctxt serviceIdent service = do
                  , update "optInitialMetadata" "initialMetadata"
                  , update "optSSLConfig" "sslConfig"
                  , update "optLogger" "logger"
+                 , update "optServerOnStarted" "serverOnStarted"
                  , update "optMaxReceiveMessageLength" "serverMaxReceiveMessageLength"
                  , update "optMaxMetadataSize" "serverMaxMetadataSize"
                  ]

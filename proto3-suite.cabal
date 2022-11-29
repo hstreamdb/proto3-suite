@@ -19,9 +19,15 @@ author:              Arista Networks <opensource@awakesecurity.com>
 maintainer:          Arista Networks <opensource@awakesecurity.com>
 copyright:           2017-2020 Awake Security, 2021-2022 Arista Networks
 category:            Codec
-build-type:          Simple
+build-type:          Custom
 data-files:          test-files/*.bin tests/encode.sh tests/decode.sh
 extra-source-files:  CHANGELOG.md, gen/.gitignore
+
+custom-setup
+  setup-depends:
+    base,
+    Cabal,
+    cabal-doctest
 
 flag dhall
   Description:   Turn on Dhall interpret and inject codegen
@@ -30,7 +36,7 @@ flag dhall
 
 flag swagger
   Description:   Turn on Swagger doc generation.
-  Default:       True
+  Default:       False
   Manual:        True
 
 flag swagger-wrapper-format
@@ -43,8 +49,8 @@ flag large-records
   Default:       True
   Manual:        True
 
-common common 
-  default-extensions: 
+common common
+  default-extensions:
     DeriveDataTypeable DeriveGeneric
 
 library
@@ -67,7 +73,7 @@ library
 
   if flag(large-records)
     -- large-records support uses newer Dhall APIs. So we need at least 1.34.
-    build-depends:     dhall >=1.34 && < 1.39,
+    build-depends:     dhall >=1.34 && < 1.50,
                        large-generics,
                        large-records
     cpp-options:       -DLARGE_RECORDS
@@ -95,7 +101,7 @@ library
 
   other-modules:       Turtle.Compat
 
-  build-depends:       aeson >= 1.1.1.0 && < 2.1,
+  build-depends:       aeson >= 1.1.1.0 && < 2.2,
                        aeson-pretty,
                        attoparsec >= 0.13.0.1,
                        base >=4.8 && <5.0,
@@ -125,7 +131,7 @@ library
                        split,
                        system-filepath,
                        time,
-                       text >= 0.2 && <1.3,
+                       text >= 0.2 && <2.1,
                        text-short >=0.1.3 && <0.2,
                        transformers >=0.4 && <0.6,
                        turtle < 1.6.0 || >= 1.6.1 && < 1.7.0,
@@ -187,7 +193,7 @@ test-suite tests
     Test.Proto.Parse.Option
 
   build-depends:
-      aeson >= 1.1.1.0 && < 2.1
+      aeson >= 1.1.1.0 && < 2.2
     , attoparsec >= 0.13.0.1
     , base >=4.8 && <5.0
     , base64-bytestring >= 1.0.0.1 && < 1.3
@@ -209,7 +215,7 @@ test-suite tests
     , tasty-hedgehog
     , tasty-hunit >= 0.9 && <0.11
     , tasty-quickcheck >= 0.8.4 && <0.11
-    , text >= 0.2 && <1.3
+    , text >= 0.2 && <2.1
     , text-short >=0.1.3 && <0.2
     , transformers >=0.4 && <0.6
     , turtle
@@ -219,7 +225,7 @@ test-suite tests
     build-depends:     semigroups >= 0.18 && < 0.20
   ghc-options:         -O2 -Wall
 
-executable compile-proto-file
+executable compile-proto-file_hstream
   main-is:             Main.hs
   hs-source-dirs:      tools/compile-proto-file
   default-language:    Haskell2010
@@ -231,7 +237,7 @@ executable compile-proto-file
                        , turtle
   ghc-options:         -O2 -Wall
 
-executable canonicalize-proto-file
+executable canonicalize-proto-file_hstream
   main-is:             Main.hs
   hs-source-dirs:      tools/canonicalize-proto-file
   default-language:    Haskell2010
